@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Breakfast Inventory Manager</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --accent: #2563eb;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text: #0f172a;
+            --border: #e2e8f0;
+            --alert-bg: #fef2f2;
+            --alert-text: #991b1b;
+            --cheap-bg: #dcfce7;
+            --cheap-text: #166534;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg);
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            background: var(--surface);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        h1 { margin: 0; font-size: 24px; color: var(--primary); }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"], select {
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        input[type="text"] { flex-grow: 1; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--surface);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th { background-color: var(--primary); color: white; }
+
+        tr.low-stock { background-color: var(--alert-bg); }
+
+        .stock-input {
+            width: 60px;
+            padding: 6px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .badge-alert { background: var(--alert-bg); color: var(--alert-text); }
+        .badge-cheap { background: var(--cheap-bg); color: var(--cheap-text); }
+
+        .btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>Hotel Breakfast Inventory</h1>
+                <p style="margin: 4px 0 0; color: #64748b;">Masi's Daily Operations Dashboard</p>
+            </div>
+            <button class="btn" onclick="exportShoppingList()">Generate Shopping List</button>
+        </header>
+
+        <div class="controls">
+            <input type="text" id="searchInput" placeholder="Search product name or vendor..." onkeyup="filterItems()">
+            <select id="vendorFilter" onchange="filterItems()">
+                <option value="ALL">All Vendors</option>
+                <option value="COSTCO">Costco / Costco Business</option>
+                <option value="SAM'S">Sam's Club</option>
+                <option value="RESTAURANT DEPO">Restaurant Depot</option>
+                <option value="WALMART">Walmart Business</option>
+                <option value="SYSCO">Sysco</option>
+                <option value="SEATTLE">Seattle Coffee</option>
+                <option value="GOLDEN WAFFLE">Golden Waffle</option>
+            </select>
+        </div>
+
+        <table id="inventoryTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Product Name</th>
+                    <th>Default Vendor</th>
+                    <th>Min Level</th>
+                    <th>Current Stock</th>
+                    <th>Cheapest Vendor Price</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="inventoryBody">
+                <!-- Data populated dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const initialData = [
+            { id: 1, name: "YOGURT", vendor: "COSTCO", min: 5, stock: 8, cheap: "R.D ($0.33/ea)", price: "$0.33" },
+            { id: 2, name: "SAUSAGE SANDWICH", vendor: "SAM'S CLUB/COSTCO", min: 6, stock: 4, cheap: "Costco ($1.16/ea)", price: "$1.16" },
+            { id: 3, name: "BANANAS", vendor: "SAM'S CLUB/COSTCO", min: 6, stock: 7, cheap: "Sam's/Costco ($0.49/lb)", price: "$0.49" },
+            { id: 4, name: "12OZ PAPER BOWL", vendor: "SAM'S CLUB/COSTCO", min: 1, stock: 2, cheap: "Costco ($11.98/200ct)", price: "$11.98" },
+            { id: 5, name: "CREAM CHEESE", vendor: "COSTCO BUSINESS", min: 1, stock: 0, cheap: "Costco ($0.23/ea)", price: "$0.23" },
+            { id: 6, name: "PLAIN BAGEL", vendor: "COSTCO BUSINESS", min: 2, stock: 3, cheap: "Costco ($0.30/ea)", price: "$0.30" },
+            { id: 7, name: "BLUEBERRY BAGEL", vendor: "COSTCO BUSINESS", min: 2, stock: 1, cheap: "Costco ($0.30/ea)", price: "$0.30" },
+            { id: 8, name: "RAISIN CINNAMON BAGEL", vendor: "COSTCO BUSINESS", min: 2, stock: 2, cheap: "Costco ($0.30/ea)", price: "$0.30" },
+            { id: 9, name: "FRENCH VANILLA CREAMER", vendor: "COSTCO BUSINESS", min: 1, stock: 2, cheap: "Costco ($13.99/ea)", price: "$13.99" },
+            { id: 10, name: "HAZELNUT CREAMER", vendor: "COSTCO BUSINESS", min: 1, stock: 1, cheap: "Costco ($13.99/ea)", price: "$13.99" },
+            { id: 11, name: "WATER 16.9OZ", vendor: "SAM'S CLUB/COSTCO", min: 10, stock: 15, cheap: "Costco ($3.99/40ct)", price: "$3.99" },
+            { id: 12, name: "UNSWEETENED CEREAL", vendor: "SAM'S CLUB/COSTCO", min: 2, stock: 1, cheap: "Sam's/Costco ($6.88/41oz)", price: "$6.88" },
+            { id: 13, name: "SWEET CEREAL", vendor: "SAM'S CLUB/COSTCO", min: 2, stock: 3, cheap: "Sam's/Costco ($7.88/55oz)", price: "$7.88" },
+            { id: 14, name: "QUICK OATMEAL", vendor: "SAM'S CLUB/COSTCO", min: 1, stock: 2, cheap: "Sam's/Costco ($10.98/52ct)", price: "$10.98" },
+            { id: 15, name: "REGULAR COFFEE", vendor: "SEATTLE COFFEE", min: 1, stock: 2, cheap: "Seattle Coffee", price: "N/A" },
+            { id: 19, name: "WHITE BREAD", vendor: "WALMART BUSINESS", min: 1, stock: 1, cheap: "Walmart ($1.63/ea)", price: "$1.63" },
+            { id: 20, name: "WHEAT BREAD", vendor: "WALMART BUSINESS", min: 1, stock: 2, cheap: "Walmart ($1.48/ea)", price: "$1.48" },
+            { id: 21, name: "MILK 2%", vendor: "WALMART BUSINESS", min: 2, stock: 1, cheap: "Walmart ($3.27/1gal)", price: "$3.27" },
+            { id: 26, name: "HARD BOILED EGGS", vendor: "RESTAURANT DEPO", min: 1, stock: 0, cheap: "R.D ($35.25/144ct)", price: "$35.25" },
+            { id: 27, name: "BUTTER CUP", vendor: "SYSCO", min: 1, stock: 2, cheap: "Sysco ($31.66/750ct)", price: "$31.66" },
+            { id: 36, name: "NAPKIN", vendor: "COSTCO/R.D", min: 1, stock: 2, cheap: "R.D ($29.50/6000ct)", price: "$29.50" },
+            { id: 37, name: "9'' PAPER PLATE", vendor: "COSTCO/R.D", min: 1, stock: 0, cheap: "R.D ($24.99/1200ct)", price: "$24.99" },
+            { id: 48, name: "ASSORTED JELLY", vendor: "RESTAURANT DEPO", min: 1, stock: 3, cheap: "Costco ($14.91/200ct)", price: "$14.91" },
+            { id: 50, name: "MAPLE SYRUP", vendor: "RESTAURANT DEPO", min: 1, stock: 1, cheap: "Sam's ($8.29/1gal)", price: "$8.29" }
+        ];
+
+        let inventory = JSON.parse(localStorage.getItem("hotel_inventory")) || initialData;
+
+        function saveAndRender() {
+            localStorage.setItem("hotel_inventory", JSON.stringify(inventory));
+            renderTable(inventory);
+        }
+
+        function updateStock(id, newStock) {
+            const item = inventory.find(i => i.id === id);
+            if (item) {
+                item.stock = parseInt(newStock) || 0;
+                saveAndRender();
+            }
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById("inventoryBody");
+            tbody.innerHTML = "";
+
+            data.forEach(item => {
+                const isLow = item.stock <= item.min;
+                const tr = document.createElement("tr");
+                if (isLow) tr.classList.add("low-stock");
+
+                tr.innerHTML = `
+                    <td>${item.id}</td>
+                    <td><strong>${item.name}</strong></td>
+                    <td>${item.vendor}</td>
+                    <td>${item.min}</td>
+                    <td>
+                        <input type="number" class="stock-input" value="${item.stock}" onchange="updateStock(${item.id}, this.value)">
+                    </td>
+                    <td><span class="badge badge-cheap">${item.cheap}</span></td>
+                    <td>
+                        ${isLow ? '<span class="badge badge-alert">LOW STOCK</span>' : '<span style="color: #16a34a;">OK</span>'}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterItems() {
+            const query = document.getElementById("searchInput").value.toUpperCase();
+            const vendor = document.getElementById("vendorFilter").value;
+
+            const filtered = inventory.filter(item => {
+                const matchesSearch = item.name.includes(query) || item.vendor.includes(query);
+                const matchesVendor = vendor === "ALL" || item.vendor.includes(vendor);
+                return matchesSearch && matchesVendor;
+            });
+
+            renderTable(filtered);
+        }
+
+        function exportShoppingList() {
+            const lowItems = inventory.filter(item => item.stock <= item.min);
+            if (lowItems.length === 0) {
+                alert("All stock levels are sufficient! No items to purchase.");
+                return;
+            }
+
+            let summary = "SHOPPING LIST NEEDED:\n\n";
+            lowItems.forEach(item => {
+                summary += `- ${item.name} (Current Stock: ${item.stock}, Reorder Min: ${item.min}) -> Preferred Vendor: ${item.vendor} [Best Price: ${item.cheap}]\n`;
+            });
+
+            alert(summary);
+        }
+
+        renderTable(inventory);
+    </script>
+</body>
+</html>
