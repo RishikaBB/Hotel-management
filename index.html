@@ -130,6 +130,7 @@
                 <option value="SYSCO">Sysco</option>
                 <option value="SEATTLE">Seattle Coffee</option>
                 <option value="GOLDEN WAFFLE">Golden Waffle</option>
+                <option value="PACIFIC">Pacific Supplier</option>
             </select>
         </div>
 
@@ -146,7 +147,7 @@
                 </tr>
             </thead>
             <tbody id="inventoryBody">
-                <!-- Data populated dynamically -->
+                <!-- Javascript will populate inventory items -->
             </tbody>
         </table>
     </div>
@@ -168,15 +169,44 @@
             { id: 13, name: "SWEET CEREAL", vendor: "SAM'S CLUB/COSTCO", min: 2, stock: 3, cheap: "Sam's/Costco ($7.88/55oz)", price: "$7.88" },
             { id: 14, name: "QUICK OATMEAL", vendor: "SAM'S CLUB/COSTCO", min: 1, stock: 2, cheap: "Sam's/Costco ($10.98/52ct)", price: "$10.98" },
             { id: 15, name: "REGULAR COFFEE", vendor: "SEATTLE COFFEE", min: 1, stock: 2, cheap: "Seattle Coffee", price: "N/A" },
+            { id: 16, name: "COFFEE LIDS", vendor: "SEATTLE COFFEE", min: 1, stock: 2, cheap: "Seattle Coffee", price: "N/A" },
+            { id: 17, name: "COFFEE CUP", vendor: "SEATTLE COFFEE", min: 1, stock: 2, cheap: "Seattle Coffee", price: "N/A" },
+            { id: 18, name: "DECAFFEINATED COFFEE", vendor: "SEATTLE COFFEE", min: 1, stock: 2, cheap: "Seattle Coffee", price: "N/A" },
             { id: 19, name: "WHITE BREAD", vendor: "WALMART BUSINESS", min: 1, stock: 1, cheap: "Walmart ($1.63/ea)", price: "$1.63" },
             { id: 20, name: "WHEAT BREAD", vendor: "WALMART BUSINESS", min: 1, stock: 2, cheap: "Walmart ($1.48/ea)", price: "$1.48" },
             { id: 21, name: "MILK 2%", vendor: "WALMART BUSINESS", min: 2, stock: 1, cheap: "Walmart ($3.27/1gal)", price: "$3.27" },
+            { id: 22, name: "ORIGINAL CREAMER", vendor: "WALMART BUSINESS", min: 1, stock: 2, cheap: "Walmart ($13.78/ea)", price: "$13.78" },
+            { id: 23, name: "ORANGES", vendor: "NORTHPARK", min: 1, stock: 2, cheap: "Northpark ($46.20/113ct)", price: "$46.20" },
+            { id: 24, name: "WAFFLE CLEAR CUP", vendor: "GOLDEN WAFFLE", min: 1, stock: 2, cheap: "Golden Waffle", price: "N/A" },
+            { id: 25, name: "WAFFLE MIX", vendor: "GOLDEN WAFFLE", min: 1, stock: 2, cheap: "Golden Waffle", price: "N/A" },
             { id: 26, name: "HARD BOILED EGGS", vendor: "RESTAURANT DEPO", min: 1, stock: 0, cheap: "R.D ($35.25/144ct)", price: "$35.25" },
             { id: 27, name: "BUTTER CUP", vendor: "SYSCO", min: 1, stock: 2, cheap: "Sysco ($31.66/750ct)", price: "$31.66" },
+            { id: 28, name: "APPLE JUICE", vendor: "SYSCO", min: 1, stock: 2, cheap: "Sysco ($84.46)", price: "$84.46" },
+            { id: 29, name: "CRANBERRY JUICE", vendor: "SYSCO", min: 1, stock: 2, cheap: "Sysco ($75.21)", price: "$75.21" },
+            { id: 30, name: "NON DAIRY CREAMER", vendor: "SYSCO/COSTCO/R.D", min: 1, stock: 2, cheap: "Costco ($50.43/2000ct)", price: "$50.43" },
+            { id: 31, name: "PEANUT BUTTER CUP", vendor: "SYSCO/SAM'S CLUB", min: 1, stock: 2, cheap: "Sam's ($0.29/1.5oz)", price: "$0.29" },
+            { id: 32, name: "SWEETENER PINK", vendor: "COSTCO/R.D", min: 1, stock: 2, cheap: "R.D ($13.19/1500ct)", price: "$13.19" },
+            { id: 33, name: "TEA BAG", vendor: "COSTCO/R.D", min: 1, stock: 2, cheap: "R.D ($4.65/100ct)", price: "$4.65" },
+            { id: 34, name: "REGULAR SUGAR", vendor: "COSTCO/R.D", min: 1, stock: 2, cheap: "R.D ($13.99/2000ct)", price: "$13.99" },
+            { id: 35, name: "COFFEE FILTER", vendor: "COSTCO/R.D", min: 1, stock: 2, cheap: "Costco ($19.65/500ct)", price: "$19.65" },
             { id: 36, name: "NAPKIN", vendor: "COSTCO/R.D", min: 1, stock: 2, cheap: "R.D ($29.50/6000ct)", price: "$29.50" },
             { id: 37, name: "9'' PAPER PLATE", vendor: "COSTCO/R.D", min: 1, stock: 0, cheap: "R.D ($24.99/1200ct)", price: "$24.99" },
+            { id: 38, name: "ALUMINUM FOIL", vendor: "COSTCO/R.D", min: 0, stock: 1, cheap: "R.D ($46.50/1000ft)", price: "$46.50" },
+            { id: 39, name: "PEPPER", vendor: "COSTCO/R.D", min: 1, stock: 2, cheap: "R.D ($17.89/3000ct)", price: "$17.89" },
+            { id: 40, name: "SALT", vendor: "COSTCO/R.D", min: 1, stock: 2, cheap: "R.D ($6.99/3000ct)", price: "$6.99" },
+            { id: 41, name: "PLASTIC FOOD WRAP", vendor: "COSTCO/R.D", min: 0, stock: 1, cheap: "R.D ($23.98/3000ft)", price: "$23.98" },
+            { id: 42, name: "HOT SAUCES", vendor: "RESTAURANT DEPO", min: 1, stock: 2, cheap: "R.D ($5.85/200ct)", price: "$5.85" },
+            { id: 43, name: "DISPOSABLE SPOON", vendor: "RESTAURANT DEPO", min: 1, stock: 2, cheap: "R.D ($7.49/100ct)", price: "$7.49" },
+            { id: 44, name: "DISPOSABLE FORK", vendor: "RESTAURANT DEPO", min: 1, stock: 2, cheap: "R.D ($7.49/1000ct)", price: "$7.49" },
+            { id: 45, name: "DISPOSABLE KNIFE", vendor: "RESTAURANT DEPO", min: 1, stock: 2, cheap: "R.D ($7.49/1000ct)", price: "$7.49" },
+            { id: 46, name: "MULTIFOLD NAPKIN", vendor: "RESTAURANT DEPO", min: 1, stock: 2, cheap: "R.D ($22.99/4000ct)", price: "$22.99" },
+            { id: 47, name: "ROLL TOWEL FOR TOILET", vendor: "RESTAURANT DEPO", min: 1, stock: 2, cheap: "R.D ($22.89/600ft)", price: "$22.89" },
             { id: 48, name: "ASSORTED JELLY", vendor: "RESTAURANT DEPO", min: 1, stock: 3, cheap: "Costco ($14.91/200ct)", price: "$14.91" },
-            { id: 50, name: "MAPLE SYRUP", vendor: "RESTAURANT DEPO", min: 1, stock: 1, cheap: "Sam's ($8.29/1gal)", price: "$8.29" }
+            { id: 49, name: "TOMATO KETCHUP", vendor: "RESTAURANT DEPO", min: 1, stock: 2, cheap: "R.D ($18.05/1000ct)", price: "$18.05" },
+            { id: 50, name: "MAPLE SYRUP", vendor: "RESTAURANT DEPO", min: 1, stock: 1, cheap: "Sam's ($8.29/1gal)", price: "$8.29" },
+            { id: 51, name: "WAFFLE IRON SPRAY", vendor: "GOLDEN WAFFLE", min: 0, stock: 1, cheap: "Golden Waffle", price: "N/A" },
+            { id: 52, name: "COFFEE STICK", vendor: "SAM'S CLUB", min: 1, stock: 2, cheap: "Sam's ($11.98/5000ct)", price: "$11.98" },
+            { id: 53, name: "DISPOSABLE CLEAR GLASS", vendor: "PACIFIC SUPPLIER", min: 1, stock: 2, cheap: "Pacific Supplier ($30/2500ct)", price: "$30.00" }
         ];
 
         let inventory = JSON.parse(localStorage.getItem("hotel_inventory")) || initialData;
